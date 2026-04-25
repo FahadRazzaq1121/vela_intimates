@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+  --font-inter: 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-100 text-charcoal font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-blush-200 text-charcoal;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-cream-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-blush-300 rounded-full;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-charcoal text-cream-50 px-8 py-3.5 text-sm font-medium tracking-widest uppercase transition-all duration-300 hover:bg-blush-600 focus:outline-none focus:ring-2 focus:ring-blush-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation select-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 border border-charcoal text-charcoal px-8 py-3.5 text-sm font-medium tracking-widest uppercase bg-transparent transition-all duration-300 hover:bg-charcoal hover:text-cream-50 focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-2 touch-manipulation select-none;
+  }
+
+  .btn-rose {
+    @apply inline-flex items-center justify-center gap-2 bg-blush-500 text-white px-8 py-3.5 text-sm font-medium tracking-widest uppercase transition-all duration-300 hover:bg-blush-600 focus:outline-none focus:ring-2 focus:ring-blush-400 focus:ring-offset-2 touch-manipulation select-none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 text-charcoal px-4 py-2 text-sm font-medium transition-all duration-200 hover:text-blush-600 focus:outline-none touch-manipulation select-none;
+  }
+
+  /* Form inputs */
+  .input-luxury {
+    @apply w-full border border-cream-300 bg-cream-50 px-4 py-3 text-sm text-charcoal placeholder-charcoal/40 outline-none transition-all duration-200 focus:border-blush-400 focus:ring-1 focus:ring-blush-400;
+  }
+
+  .label-luxury {
+    @apply block text-xs font-medium uppercase tracking-widest text-charcoal/70 mb-2;
+  }
+
+  /* Product card */
+  .product-card {
+    @apply relative bg-cream-50 overflow-hidden transition-all duration-300 hover:shadow-card-hover;
+  }
+
+  /* Section headers */
+  .section-tag {
+    @apply text-xs font-medium uppercase tracking-ultra-wide text-blush-500 mb-3;
+  }
+
+  .section-title {
+    @apply font-display text-3xl md:text-4xl lg:text-5xl font-light text-charcoal leading-tight;
+  }
+
+  /* Admin */
+  .admin-card {
+    @apply bg-white rounded-lg border border-gray-100 shadow-sm p-6;
+  }
+
+  /* Divider */
+  .divider-luxury {
+    @apply border-t border-cream-300;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Fancy underline animation */
+  .hover-underline {
+    @apply relative;
+  }
+
+  .hover-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300;
+  }
+
+  .hover-underline:hover::after {
+    @apply w-full;
+  }
+}
+
+/* Toaster custom positioning */
+.toast-container {
+  @apply fixed bottom-6 right-6 z-[9999];
+}
+
+/* Slide-in cart animation */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.cart-slide-in {
+  animation: slideInFromRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Luxury loading skeleton */
+@keyframes skeletonShimmer {
+  0% { background-position: -800px 0; }
+  100% { background-position: 800px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0e8e8 25%, #f7f0f0 50%, #f0e8e8 75%);
+  background-size: 800px 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+/* Framer motion page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease;
+}
