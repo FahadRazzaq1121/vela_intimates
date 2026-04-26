@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, ShoppingBag, Package, Tag, Users,
-  BarChart2, Settings, LogOut, ChevronLeft, ChevronRight, Layers
+  BarChart2, Settings, LogOut, ChevronLeft, ChevronRight, Layers, MessageSquare, Star
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -18,6 +18,9 @@ const NAV = [
   { href: '/admin/categories', icon: Tag, label: 'Categories' },
   { href: '/admin/hero-slides', icon: Layers, label: 'Hero Slides' },
   { href: '/admin/customers', icon: Users, label: 'Customers' },
+  { href: '/admin/reviews', icon: Star, label: 'Reviews' },
+  { href: '/admin/testimonials', icon: MessageSquare, label: 'Testimonials' },
+  { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ]
 
 export default function AdminSidebar() {

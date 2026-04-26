@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatPrice, formatDate, ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/lib/utils'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Printer } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import OrderStatusUpdater from '@/components/admin/OrderStatusUpdater'
@@ -31,16 +31,26 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Back */}
-      <div className="flex items-center gap-4">
-        <Link href="/admin/orders" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
-          <ArrowLeft size={16} />
-          Back to Orders
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/orders" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <ArrowLeft size={16} />
+            Back to Orders
+          </Link>
+          <span className="text-gray-300">|</span>
+          <h1 className="text-base font-semibold text-gray-800">{order.order_number}</h1>
+          <span className={`badge ${ORDER_STATUS_COLORS[order.status]}`}>
+            {ORDER_STATUS_LABELS[order.status]}
+          </span>
+        </div>
+        <Link
+          href={`/admin/orders/${id}/receipt`}
+          target="_blank"
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded transition-colors"
+        >
+          <Printer size={13} />
+          Print Receipt
         </Link>
-        <span className="text-gray-300">|</span>
-        <h1 className="text-base font-semibold text-gray-800">{order.order_number}</h1>
-        <span className={`badge ${ORDER_STATUS_COLORS[order.status]}`}>
-          {ORDER_STATUS_LABELS[order.status]}
-        </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

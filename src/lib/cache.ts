@@ -2,6 +2,38 @@ import { unstable_cache } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'
 import type { Product, Category, HeroSlide } from '@/types'
 
+export interface SiteSettings {
+  brand_name: string
+  brand_tagline: string
+  site_name: string
+  contact_email: string
+  instagram_url: string
+  facebook_url: string
+  show_instagram: string
+  show_facebook: string
+  footer_whatsapp: string
+  show_whatsapp: string
+  show_newsletter: string
+  footer_copyright: string
+  footer_shop_links: string
+  footer_help_links: string
+  whatsapp_number: string
+  [key: string]: string
+}
+
+export interface Testimonial {
+  id: string
+  customer_name: string
+  customer_image_url: string | null
+  quote: string
+  rating: number
+  product_name: string | null
+  location: string | null
+  is_active: boolean
+  sort_order: number
+  created_at: string
+}
+
 function getDb() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -148,5 +180,49 @@ export const getCachedRelatedProducts = unstable_cache(
     return (data || []) as Product[]
   },
   ['related-products'],
-  { tags: ['products'] , revalidate: 300 }
+  { tags: ['products'], revalidate: 300 }
+)
+
+export const getCachedSiteSettings = unstable_cache(
+  async () => {
+    const db = getDb()
+    const { data } = await db.from('settings').select('key, value')
+    const settings: SiteSettings = {
+      brand_name: 'Vela Intimates',
+      brand_tagline: 'Luxury lingerie crafted for the modern woman.',
+      site_name: 'Vela Intimates',
+      contact_email: '',
+      instagram_url: '',
+      facebook_url: '',
+      show_instagram: 'true',
+      show_facebook: 'true',
+      footer_whatsapp: '',
+      show_whatsapp: 'true',
+      show_newsletter: 'true',
+      footer_copyright: 'Vela Intimates. All rights reserved.',
+      footer_shop_links: '[]',
+      footer_help_links: '[]',
+      whatsapp_number: '',
+    }
+    for (const row of data || []) {
+      settings[row.key] = row.value || ''
+    }
+    return settings
+  },
+  ['site-settings'],
+  { tags: ['site-settings'], revalidate: 300 }
+)
+
+export const getCachedTestimonials = unstable_cache(
+  async () => {
+    const db = getDb()
+    const { data } = await db
+      .from('testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order')
+    return (data || []) as Testimonial[]
+  },
+  ['testimonials'],
+  { tags: ['testimonials'], revalidate: 300 }
 )

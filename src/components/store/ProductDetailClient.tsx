@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, ShoppingBag, Minus, Plus, Star, ChevronDown, ChevronRight, Truck, RefreshCw, Shield } from 'lucide-react'
+import { Heart, ShoppingBag, Minus, Plus, Star, ChevronDown, ChevronRight, Truck, RefreshCw, Shield, PenLine, X } from 'lucide-react'
 import { Product } from '@/types'
 import { useCart } from '@/contexts/CartContext'
 import { formatPrice, getDiscountPercent } from '@/lib/utils'
@@ -28,6 +28,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   })
   const [openAccordion, setOpenAccordion] = useState<string | null>('description')
   const [adding, setAdding] = useState(false)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, title: '', body: '' })
+  const [submittingReview, setSubmittingReview] = useState(false)
 
   const images = product.images || []
   const primaryImage = images.find((i) => i.is_primary)?.url || images[0]?.url || '/images/product-placeholder.svg'
@@ -78,6 +81,30 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist', {
       style: { background: '#2C2C2C', color: '#FAF6F1' },
     })
+  }
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!reviewForm.name || !reviewForm.email) {
+      toast.error('Name and email are required')
+      return
+    }
+    setSubmittingReview(true)
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: product.id, customer_name: reviewForm.name, customer_email: reviewForm.email, rating: reviewForm.rating, title: reviewForm.title, body: reviewForm.body }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success('Review submitted! It will appear after approval.')
+      setShowReviewForm(false)
+      setReviewForm({ name: '', email: '', rating: 5, title: '', body: '' })
+    } catch {
+      toast.error('Failed to submit review. Please try again.')
+    } finally {
+      setSubmittingReview(false)
+    }
   }
 
   const ACCORDIONS = [
@@ -347,9 +374,74 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
 
           {/* Reviews Section */}
-          {approvedReviews.length > 0 && (
-            <div className="mt-8 pt-8 border-t border-cream-200">
-              <h3 className="font-display text-xl text-charcoal mb-4">Customer Reviews</h3>
+          <div className="mt-8 pt-8 border-t border-cream-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-xl text-charcoal">
+                Customer Reviews
+                {approvedReviews.length > 0 && (
+                  <span className="text-sm font-sans text-charcoal/40 ml-2">({approvedReviews.length})</span>
+                )}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowReviewForm(!showReviewForm)}
+                style={{ touchAction: 'manipulation' }}
+                className="flex items-center gap-1.5 text-xs font-medium text-blush-600 hover:text-blush-700 border border-blush-200 hover:border-blush-400 px-3 py-2 transition-all"
+              >
+                <PenLine size={12} />
+                Write a Review
+              </button>
+            </div>
+
+            {/* Review Form */}
+            {showReviewForm && (
+              <div className="mb-6 p-5 bg-cream-50 border border-cream-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-medium text-charcoal">Share Your Experience</h4>
+                  <button type="button" onClick={() => setShowReviewForm(false)} className="text-charcoal/40 hover:text-charcoal transition-colors">
+                    <X size={16} />
+                  </button>
+                </div>
+                <form onSubmit={handleSubmitReview} className="space-y-3">
+                  {/* Star Rating */}
+                  <div>
+                    <label className="label-luxury">Your Rating *</label>
+                    <div className="flex gap-1 mt-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button key={star} type="button" onClick={() => setReviewForm((p) => ({ ...p, rating: star }))} style={{ touchAction: 'manipulation' }}>
+                          <Star size={22} className={star <= reviewForm.rating ? 'fill-gold text-gold' : 'text-cream-300'} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="label-luxury">Name *</label>
+                      <input value={reviewForm.name} onChange={(e) => setReviewForm((p) => ({ ...p, name: e.target.value }))} className="input-luxury" placeholder="Your name" required />
+                    </div>
+                    <div>
+                      <label className="label-luxury">Email *</label>
+                      <input type="email" value={reviewForm.email} onChange={(e) => setReviewForm((p) => ({ ...p, email: e.target.value }))} className="input-luxury" placeholder="Your email" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="label-luxury">Review Title</label>
+                    <input value={reviewForm.title} onChange={(e) => setReviewForm((p) => ({ ...p, title: e.target.value }))} className="input-luxury" placeholder="Summarise your experience" />
+                  </div>
+                  <div>
+                    <label className="label-luxury">Review</label>
+                    <textarea value={reviewForm.body} onChange={(e) => setReviewForm((p) => ({ ...p, body: e.target.value }))} rows={3} className="input-luxury resize-none" placeholder="Tell us what you think…" />
+                  </div>
+                  <button type="submit" disabled={submittingReview} className="btn-primary text-xs px-6 py-2.5 w-full disabled:opacity-50">
+                    {submittingReview ? 'Submitting…' : 'Submit Review'}
+                  </button>
+                  <p className="text-2xs text-charcoal/40 text-center">Reviews are published after approval.</p>
+                </form>
+              </div>
+            )}
+
+            {/* Existing Reviews */}
+            {approvedReviews.length > 0 ? (
               <div className="space-y-4">
                 {approvedReviews.slice(0, 3).map((review) => (
                   <div key={review.id} className="pb-4 border-b border-cream-200 last:border-0">
@@ -369,8 +461,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              !showReviewForm && (
+                <p className="text-sm text-charcoal/40 text-center py-6">No reviews yet. Be the first to share your thoughts!</p>
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>
