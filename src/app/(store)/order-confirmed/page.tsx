@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { CheckCircle, Package, Mail, ArrowRight } from 'lucide-react'
 import { formatPrice, formatDate, ORDER_STATUS_LABELS } from '@/lib/utils'
+import { getCachedSiteSettings } from '@/lib/cache'
 import Image from 'next/image'
 
 interface Props {
@@ -11,12 +12,16 @@ interface Props {
 
 async function OrderDetails({ orderNumber, email }: { orderNumber: string; email: string }) {
   const supabase = await createClient()
-  const { data: order } = await supabase
-    .from('orders')
-    .select('*, items:order_items(*)')
-    .eq('order_number', orderNumber)
-    .eq('shipping_email', email)
-    .single()
+  const [{ data: order }, settings] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('*, items:order_items(*)')
+      .eq('order_number', orderNumber)
+      .eq('shipping_email', email)
+      .single(),
+    getCachedSiteSettings(),
+  ])
+  const currency = settings.store_currency || 'USD'
 
   if (!order) {
     return (
@@ -66,7 +71,7 @@ async function OrderDetails({ orderNumber, email }: { orderNumber: string; email
                   {item.color && <span>· {item.color}</span>}
                   <span>· Qty: {item.quantity}</span>
                 </div>
-                <p className="text-sm text-charcoal mt-1">{formatPrice(item.total_price)}</p>
+                <p className="text-sm text-charcoal mt-1">{formatPrice(item.total_price, currency)}</p>
               </div>
             </div>
           ))}
@@ -76,21 +81,21 @@ async function OrderDetails({ orderNumber, email }: { orderNumber: string; email
         <div className="border-t border-cream-200 pt-4 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-charcoal/60">Subtotal</span>
-            <span>{formatPrice(order.subtotal)}</span>
+            <span>{formatPrice(order.subtotal, currency)}</span>
           </div>
           {order.discount_amount > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>Discount</span>
-              <span>-{formatPrice(order.discount_amount)}</span>
+              <span>-{formatPrice(order.discount_amount, currency)}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
             <span className="text-charcoal/60">Shipping</span>
-            <span>{order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee)}</span>
+            <span>{order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee, currency)}</span>
           </div>
           <div className="flex justify-between font-medium pt-2 border-t border-cream-200">
             <span>Total Paid</span>
-            <span className="font-display text-lg">{formatPrice(order.total)}</span>
+            <span className="font-display text-lg">{formatPrice(order.total, currency)}</span>
           </div>
         </div>
       </div>

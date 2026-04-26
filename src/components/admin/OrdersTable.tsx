@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { Search, Eye } from 'lucide-react'
 import { formatPrice, formatDateShort, ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Pagination from './Pagination'
 
 const ALL_STATUSES = [
@@ -24,6 +25,7 @@ interface Order {
 }
 
 export default function OrdersTable() {
+  const currency = useCurrency()
   const [page, setPage] = useState(1)
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
@@ -133,7 +135,7 @@ export default function OrdersTable() {
                         {(order.items as unknown[])?.length || 0}
                       </td>
                       <td className="px-4 py-3 font-medium text-gray-800 text-xs whitespace-nowrap">
-                        {formatPrice(order.total)}
+                        {formatPrice(order.total, currency)}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500 capitalize">
                         {order.payment_method === 'cod' ? 'COD' : 'Manual'}

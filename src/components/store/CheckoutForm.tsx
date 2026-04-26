@@ -5,6 +5,7 @@ import { useCart } from '@/contexts/CartContext'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { formatPrice, COUNTRIES } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Button from '@/components/ui/Button'
 import { Shield, Truck, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -23,6 +24,7 @@ interface FormData {
 }
 
 export default function CheckoutPage() {
+  const currency = useCurrency()
   const router = useRouter()
   const { items, subtotal, clearCart } = useCart()
   const [form, setForm] = useState<FormData>({
@@ -256,7 +258,7 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-charcoal truncate">{item.name}</p>
                         {item.size && <p className="text-2xs text-charcoal/40">Size: {item.size}</p>}
-                        <p className="text-xs text-charcoal/60 mt-1">{formatPrice(price * item.quantity)}</p>
+                        <p className="text-xs text-charcoal/60 mt-1">{formatPrice(price * item.quantity, currency)}</p>
                       </div>
                     </div>
                   )
@@ -286,23 +288,23 @@ export default function CheckoutPage() {
               <div className="border-t border-cream-200 pt-4 space-y-2 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal/60">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatPrice(subtotal, currency)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Discount</span>
-                    <span>-{formatPrice(discountAmount)}</span>
+                    <span>-{formatPrice(discountAmount, currency)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-charcoal/60">Shipping</span>
                   <span className={shippingFee === 0 ? 'text-green-600' : ''}>
-                    {shippingFee === 0 ? 'Free' : formatPrice(shippingFee)}
+                    {shippingFee === 0 ? 'Free' : formatPrice(shippingFee, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between font-medium text-base pt-2 border-t border-cream-200">
                   <span>Total</span>
-                  <span className="font-display text-lg">{formatPrice(total)}</span>
+                  <span className="font-display text-lg">{formatPrice(total, currency)}</span>
                 </div>
               </div>
 
@@ -314,7 +316,7 @@ export default function CheckoutPage() {
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-charcoal/40">
                 <Truck size={12} />
                 <span>
-                  {shippingFee === 0 ? 'Free shipping on this order' : `+${formatPrice(shippingFee)} shipping`}
+                  {shippingFee === 0 ? 'Free shipping on this order' : `+${formatPrice(shippingFee, currency)} shipping`}
                 </span>
               </div>
             </div>

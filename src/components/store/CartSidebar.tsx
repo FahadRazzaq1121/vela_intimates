@@ -5,8 +5,10 @@ import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatPrice } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 
 export default function CartSidebar() {
+  const currency = useCurrency()
   const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal, itemCount } = useCart()
 
   const FREE_SHIPPING_THRESHOLD = 75
@@ -49,7 +51,7 @@ export default function CartSidebar() {
           <div className="px-6 py-3 bg-cream-100 border-b border-cream-200">
             {remaining > 0 ? (
               <p className="text-xs text-charcoal/70 mb-2">
-                Add <span className="font-medium text-charcoal">{formatPrice(remaining)}</span> more for free shipping
+                Add <span className="font-medium text-charcoal">{formatPrice(remaining, currency)}</span> more for free shipping
               </p>
             ) : (
               <p className="text-xs text-blush-600 font-medium mb-2">🎉 You've unlocked free shipping!</p>
@@ -146,11 +148,11 @@ export default function CartSidebar() {
 
                       <div className="text-right">
                         <p className="text-sm font-medium text-charcoal">
-                          {formatPrice(price * item.quantity)}
+                          {formatPrice(price * item.quantity, currency)}
                         </p>
                         {item.sale_price && (
                           <p className="text-xs text-charcoal/40 line-through">
-                            {formatPrice(item.price * item.quantity)}
+                            {formatPrice(item.price * item.quantity, currency)}
                           </p>
                         )}
                       </div>
@@ -167,7 +169,7 @@ export default function CartSidebar() {
           <div className="px-6 py-6 border-t border-cream-200 space-y-4 bg-cream-50">
             <div className="flex items-center justify-between">
               <span className="text-sm text-charcoal/70 uppercase tracking-wider">Subtotal</span>
-              <span className="font-medium text-charcoal">{formatPrice(subtotal)}</span>
+              <span className="font-medium text-charcoal">{formatPrice(subtotal, currency)}</span>
             </div>
             <p className="text-xs text-charcoal/50">
               Shipping and taxes calculated at checkout

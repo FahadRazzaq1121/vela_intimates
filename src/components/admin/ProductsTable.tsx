@@ -6,10 +6,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Plus, Edit, Search, Trash2 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Pagination from './Pagination'
 import toast from 'react-hot-toast'
 
 export default function ProductsTable() {
+  const currency = useCurrency()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -124,11 +126,11 @@ export default function ProductsTable() {
                         </td>
                         <td className="px-4 py-3 text-xs">
                           <span className="font-medium text-gray-800">
-                            {formatPrice(product.sale_price || product.price)}
+                            {formatPrice(product.sale_price || product.price, currency)}
                           </span>
                           {product.sale_price && (
                             <span className="text-gray-400 line-through ml-1">
-                              {formatPrice(product.price)}
+                              {formatPrice(product.price, currency)}
                             </span>
                           )}
                         </td>

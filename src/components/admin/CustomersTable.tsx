@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { formatPrice, formatDateShort } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Pagination from './Pagination'
 
 interface Customer {
@@ -17,6 +18,7 @@ interface Customer {
 }
 
 export default function CustomersTable() {
+  const currency = useCurrency()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -93,7 +95,7 @@ export default function CustomersTable() {
                         {customer.total_orders}
                       </td>
                       <td className="px-4 py-3 text-xs font-medium text-gray-800">
-                        {formatPrice(customer.total_spent)}
+                        {formatPrice(customer.total_spent, currency)}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
                         {formatDateShort(customer.created_at)}

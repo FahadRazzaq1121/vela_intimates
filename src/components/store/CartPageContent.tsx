@@ -5,9 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Button from '@/components/ui/Button'
 
 export default function CartPage() {
+  const currency = useCurrency()
   const { items, removeItem, updateQuantity, subtotal, itemCount } = useCart()
 
   const FREE_SHIPPING_THRESHOLD = 75
@@ -89,9 +91,9 @@ export default function CartPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="font-medium text-sm text-charcoal">{formatPrice(price * item.quantity)}</p>
+                      <p className="font-medium text-sm text-charcoal">{formatPrice(price * item.quantity, currency)}</p>
                       {item.sale_price && (
-                        <p className="text-xs text-charcoal/40 line-through">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="text-xs text-charcoal/40 line-through">{formatPrice(item.price * item.quantity, currency)}</p>
                       )}
                     </div>
                   </div>
@@ -109,17 +111,17 @@ export default function CartPage() {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-charcoal/60">Subtotal</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span>{formatPrice(subtotal, currency)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-charcoal/60">Shipping</span>
                 <span className={shippingFee === 0 ? 'text-green-600 font-medium' : ''}>
-                  {shippingFee === 0 ? 'Free' : formatPrice(shippingFee)}
+                  {shippingFee === 0 ? 'Free' : formatPrice(shippingFee, currency)}
                 </span>
               </div>
               {shippingFee > 0 && (
                 <p className="text-xs text-charcoal/40">
-                  Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free shipping
+                  Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal, currency)} more for free shipping
                 </p>
               )}
             </div>
@@ -127,7 +129,7 @@ export default function CartPage() {
             <div className="border-t border-cream-200 pt-4 mb-6">
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span className="font-display text-lg">{formatPrice(total)}</span>
+                <span className="font-display text-lg">{formatPrice(total, currency)}</span>
               </div>
               <p className="text-xs text-charcoal/40 mt-1">Taxes included where applicable</p>
             </div>

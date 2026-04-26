@@ -74,7 +74,7 @@ function baseLayout(content: string, previewText = '') {
 </html>`
 }
 
-function itemsHtml(items: OrderItem[]) {
+function itemsHtml(items: OrderItem[], currency: string) {
   return items.map((item) => `
     <div class="item-row">
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -91,7 +91,7 @@ function itemsHtml(items: OrderItem[]) {
             </p>
           </td>
           <td valign="top" align="right">
-            <p style="margin: 0; font-size: 14px; font-weight: 500; color: ${DARK_COLOR};">${formatPrice(item.total_price)}</p>
+            <p style="margin: 0; font-size: 14px; font-weight: 500; color: ${DARK_COLOR};">${formatPrice(item.total_price, currency)}</p>
           </td>
         </tr>
       </table>
@@ -99,34 +99,34 @@ function itemsHtml(items: OrderItem[]) {
   `).join('')
 }
 
-function totalsHtml(order: Order) {
+function totalsHtml(order: Order, currency: string) {
   return `
     <table width="100%" cellpadding="0" cellspacing="8" style="margin-top: 16px;">
       <tr>
         <td style="font-size: 13px; color: #9A8E8E;">Subtotal</td>
-        <td align="right" style="font-size: 13px; color: ${DARK_COLOR};">${formatPrice(order.subtotal)}</td>
+        <td align="right" style="font-size: 13px; color: ${DARK_COLOR};">${formatPrice(order.subtotal, currency)}</td>
       </tr>
       ${order.discount_amount > 0 ? `
       <tr>
         <td style="font-size: 13px; color: #4CAF50;">Discount</td>
-        <td align="right" style="font-size: 13px; color: #4CAF50;">-${formatPrice(order.discount_amount)}</td>
+        <td align="right" style="font-size: 13px; color: #4CAF50;">-${formatPrice(order.discount_amount, currency)}</td>
       </tr>` : ''}
       <tr>
         <td style="font-size: 13px; color: #9A8E8E;">Shipping</td>
-        <td align="right" style="font-size: 13px; color: ${DARK_COLOR};">${order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee)}</td>
+        <td align="right" style="font-size: 13px; color: ${DARK_COLOR};">${order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee, currency)}</td>
       </tr>
       <tr>
         <td colspan="2"><hr style="border: none; border-top: 1px solid ${BORDER_COLOR}; margin: 8px 0;" /></td>
       </tr>
       <tr>
         <td style="font-size: 15px; font-weight: 600; color: ${DARK_COLOR};">Total</td>
-        <td align="right" style="font-size: 16px; font-weight: 600; font-family: 'Cormorant Garamond', Georgia, serif; color: ${DARK_COLOR};">${formatPrice(order.total)}</td>
+        <td align="right" style="font-size: 16px; font-weight: 600; font-family: 'Cormorant Garamond', Georgia, serif; color: ${DARK_COLOR};">${formatPrice(order.total, currency)}</td>
       </tr>
     </table>
   `
 }
 
-export function orderConfirmationEmail(order: Order): { subject: string; html: string } {
+export function orderConfirmationEmail(order: Order, currency = 'USD'): { subject: string; html: string } {
   const subject = `Order Confirmed – ${order.order_number} | Vela Intimates`
   const html = baseLayout(`
     <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; font-weight: 300; color: ${DARK_COLOR}; margin: 0 0 8px;">
@@ -143,8 +143,8 @@ export function orderConfirmationEmail(order: Order): { subject: string; html: s
     </div>
 
     <h3 style="font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: ${DARK_COLOR}; margin: 0 0 12px;">Items Ordered</h3>
-    ${itemsHtml(order.items || [])}
-    ${totalsHtml(order)}
+    ${itemsHtml(order.items || [], currency)}
+    ${totalsHtml(order, currency)}
 
     <hr class="divider" />
 
@@ -167,7 +167,7 @@ export function orderConfirmationEmail(order: Order): { subject: string; html: s
   return { subject, html }
 }
 
-export function orderStatusUpdateEmail(order: Order): { subject: string; html: string } {
+export function orderStatusUpdateEmail(order: Order, currency = 'USD'): { subject: string; html: string } {
   const statusLabel = ORDER_STATUS_LABELS[order.status] || order.status
   const subject = `Your Order ${order.order_number} — ${statusLabel} | Vela Intimates`
 
@@ -218,8 +218,8 @@ export function orderStatusUpdateEmail(order: Order): { subject: string; html: s
   return { subject, html }
 }
 
-export function adminNewOrderEmail(order: Order): { subject: string; html: string } {
-  const subject = `🛍️ New Order ${order.order_number} — ${formatPrice(order.total)}`
+export function adminNewOrderEmail(order: Order, currency = 'USD'): { subject: string; html: string } {
+  const subject = `🛍️ New Order ${order.order_number} — ${formatPrice(order.total, currency)}`
   const html = baseLayout(`
     <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 300; color: ${DARK_COLOR}; margin: 0 0 8px;">
       New Order Received
@@ -244,7 +244,7 @@ export function adminNewOrderEmail(order: Order): { subject: string; html: strin
         </tr>
         <tr>
           <td style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #9A8E8E;">Total</td>
-          <td align="right" style="font-size: 16px; font-weight: 600; color: ${BRAND_COLOR};">${formatPrice(order.total)}</td>
+          <td align="right" style="font-size: 16px; font-weight: 600; color: ${BRAND_COLOR};">${formatPrice(order.total, currency)}</td>
         </tr>
         <tr>
           <td style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #9A8E8E;">Payment</td>
@@ -254,14 +254,14 @@ export function adminNewOrderEmail(order: Order): { subject: string; html: strin
     </div>
 
     <h3 style="font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: ${DARK_COLOR}; margin: 0 0 12px;">Items</h3>
-    ${itemsHtml(order.items || [])}
+    ${itemsHtml(order.items || [], currency)}
 
     <div style="text-align: center; margin-top: 28px;">
       <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://velaintimates.com'}/admin/orders/${order.id}" class="btn">
         View Order in Admin
       </a>
     </div>
-  `, `New order ${order.order_number} — ${formatPrice(order.total)}`)
+  `, `New order ${order.order_number} — ${formatPrice(order.total, currency)}`)
 
   return { subject, html }
 }

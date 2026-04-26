@@ -67,7 +67,7 @@ export default async function HomePage() {
       />
       <TestimonialsSection />
       <InstagramSection />
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
     </>
   )
 }

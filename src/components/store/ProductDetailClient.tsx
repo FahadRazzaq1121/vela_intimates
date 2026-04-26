@@ -7,6 +7,7 @@ import { Heart, ShoppingBag, Minus, Plus, Star, ChevronDown, ChevronRight, Truck
 import { Product } from '@/types'
 import { useCart } from '@/contexts/CartContext'
 import { formatPrice, getDiscountPercent } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import toast from 'react-hot-toast'
@@ -16,6 +17,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const currency = useCurrency()
   const { addItem, getItemKey } = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedSize, setSelectedSize] = useState<string | null>(product.sizes?.[0] || null)
@@ -219,10 +221,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Price */}
           <div className="flex items-center gap-3 mb-6">
             <span className={`font-display text-2xl font-medium ${hasDiscount ? 'text-blush-600' : 'text-charcoal'}`}>
-              {formatPrice(price)}
+              {formatPrice(price, currency)}
             </span>
             {hasDiscount && (
-              <span className="text-lg text-charcoal/40 line-through font-light">{formatPrice(product.price)}</span>
+              <span className="text-lg text-charcoal/40 line-through font-light">{formatPrice(product.price, currency)}</span>
             )}
           </div>
 

@@ -58,7 +58,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     })
 
     // Send status update email to customer
-    const { subject, html } = orderStatusUpdateEmail(order as Order)
+    const { data: currencyRow } = await supabase.from('settings').select('value').eq('key', 'store_currency').single()
+    const currency = currencyRow?.value || 'USD'
+    const { subject, html } = orderStatusUpdateEmail(order as Order, currency)
     await sendEmail({ to: order.shipping_email, subject, html })
 
     return NextResponse.json({ success: true, order })

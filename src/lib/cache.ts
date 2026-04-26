@@ -18,6 +18,8 @@ export interface SiteSettings {
   footer_shop_links: string
   footer_help_links: string
   whatsapp_number: string
+  store_currency: string
+  store_address: string
   [key: string]: string
 }
 
@@ -213,6 +215,8 @@ export const getCachedSiteSettings = unstable_cache(
       footer_shop_links: '[]',
       footer_help_links: '[]',
       whatsapp_number: '',
+      store_currency: 'USD',
+      store_address: '',
     }
     for (const row of data || []) {
       settings[row.key] = row.value || ''

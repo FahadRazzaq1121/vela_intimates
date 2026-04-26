@@ -132,8 +132,10 @@ export async function POST(req: NextRequest) {
     // Send emails (non-blocking)
     if (fullOrder) {
       const orderWithItems = fullOrder as Order
-      const { subject: custSubject, html: custHtml } = orderConfirmationEmail(orderWithItems)
-      const { subject: adminSubject, html: adminHtml } = adminNewOrderEmail(orderWithItems)
+      const { data: currencyRow } = await supabase.from('settings').select('value').eq('key', 'store_currency').single()
+      const currency = currencyRow?.value || 'USD'
+      const { subject: custSubject, html: custHtml } = orderConfirmationEmail(orderWithItems, currency)
+      const { subject: adminSubject, html: adminHtml } = adminNewOrderEmail(orderWithItems, currency)
 
       await Promise.allSettled([
         sendEmail({ to: email, subject: custSubject, html: custHtml }),

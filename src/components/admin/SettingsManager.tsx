@@ -89,6 +89,26 @@ export default function SettingsManager({ initialSettings }: Props) {
             <label className="label-luxury">Copyright Text</label>
             <input value={settings.footer_copyright || ''} onChange={(e) => set('footer_copyright', e.target.value)} className="input-luxury" placeholder="Vela Intimates. All rights reserved." />
           </div>
+          <div>
+            <label className="label-luxury">Store Address (shown on receipts)</label>
+            <textarea value={settings.store_address || ''} onChange={(e) => set('store_address', e.target.value)} rows={2} className="input-luxury resize-none" placeholder="123 Main Street, Karachi, Pakistan" />
+          </div>
+          <div>
+            <label className="label-luxury">Store Currency</label>
+            <select value={settings.store_currency || 'USD'} onChange={(e) => set('store_currency', e.target.value)} className="input-luxury">
+              <option value="USD">USD — US Dollar ($)</option>
+              <option value="EUR">EUR — Euro (€)</option>
+              <option value="GBP">GBP — British Pound (£)</option>
+              <option value="PKR">PKR — Pakistani Rupee (₨)</option>
+              <option value="AED">AED — UAE Dirham (د.إ)</option>
+              <option value="SAR">SAR — Saudi Riyal (﷼)</option>
+              <option value="INR">INR — Indian Rupee (₹)</option>
+              <option value="BDT">BDT — Bangladeshi Taka (৳)</option>
+              <option value="CAD">CAD — Canadian Dollar (CA$)</option>
+              <option value="AUD">AUD — Australian Dollar (A$)</option>
+            </select>
+            <p className="text-xs text-gray-400 mt-1">Used across receipts, emails, and order totals.</p>
+          </div>
 
           <h2 className="text-sm font-semibold text-gray-700 pt-2">Footer Sections</h2>
           <div className="space-y-3">

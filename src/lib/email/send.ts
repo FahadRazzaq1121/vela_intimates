@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'orders@velaintimates.com'
+const FROM_EMAIL = process.env.FROM_EMAIL || "fahadrazzaq508@gmail.com"
 const FROM_NAME = 'Vela Intimates'
 
 export async function sendEmail({
@@ -21,10 +21,15 @@ export async function sendEmail({
     return { success: true, skipped: true }
   }
 
+  // In dev, redirect all emails to a test inbox (onboarding@resend.dev only delivers to your own Resend account email)
+  const recipient = process.env.TO_EMAIL_OVERRIDE
+    ? [process.env.TO_EMAIL_OVERRIDE]
+    : Array.isArray(to) ? to : [to]
+
   try {
     const result = await resend.emails.send({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: Array.isArray(to) ? to : [to],
+      to: recipient,
       subject,
       html,
     })

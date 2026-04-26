@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { CartProvider } from '@/contexts/CartContext'
+import { CurrencyProvider } from '@/contexts/CurrencyContext'
 import QueryProvider from '@/providers/QueryProvider'
+import { getCachedSiteSettings } from '@/lib/cache'
 import './globals.css'
 
 const inter = Inter({
@@ -53,12 +55,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getCachedSiteSettings()
+  const currency = settings.store_currency || 'USD'
+
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${cormorant.variable}`}>
       <body>
         <QueryProvider>
         <CartProvider>
+        <CurrencyProvider currency={currency}>
           {children}
           <Toaster
             position="bottom-right"
@@ -74,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
             }}
           />
+        </CurrencyProvider>
         </CartProvider>
         </QueryProvider>
       </body>

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatPrice, formatDate, ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/lib/utils'
+import { getCachedSiteSettings } from '@/lib/cache'
 import { ArrowLeft, Printer } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -20,11 +21,15 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const { id } = await params
   const supabase = await createClient()
 
-  const { data: order } = await supabase
-    .from('orders')
-    .select('*, items:order_items(*), status_history:order_status_history(*)')
-    .eq('id', id)
-    .single()
+  const [{ data: order }, settings] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('*, items:order_items(*), status_history:order_status_history(*)')
+      .eq('id', id)
+      .single(),
+    getCachedSiteSettings(),
+  ])
+  const currency = settings.store_currency || 'USD'
 
   if (!order) notFound()
 
@@ -87,8 +92,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-sm text-gray-800">{formatPrice(item.total_price)}</p>
-                    <p className="text-xs text-gray-400">{formatPrice(item.unit_price)} each</p>
+                    <p className="font-medium text-sm text-gray-800">{formatPrice(item.total_price, currency)}</p>
+                    <p className="text-xs text-gray-400">{formatPrice(item.unit_price, currency)} each</p>
                   </div>
                 </div>
               ))}
@@ -98,21 +103,21 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Subtotal</span>
-                <span>{formatPrice(order.subtotal)}</span>
+                <span>{formatPrice(order.subtotal, currency)}</span>
               </div>
               {order.discount_amount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount {order.coupon_code && `(${order.coupon_code})`}</span>
-                  <span>-{formatPrice(order.discount_amount)}</span>
+                  <span>-{formatPrice(order.discount_amount, currency)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Shipping</span>
-                <span>{order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee)}</span>
+                <span>{order.shipping_fee === 0 ? 'Free' : formatPrice(order.shipping_fee, currency)}</span>
               </div>
               <div className="flex justify-between font-semibold text-gray-800 pt-2 border-t border-gray-100">
                 <span>Total</span>
-                <span>{formatPrice(order.total)}</span>
+                <span>{formatPrice(order.total, currency)}</span>
               </div>
             </div>
           </div>

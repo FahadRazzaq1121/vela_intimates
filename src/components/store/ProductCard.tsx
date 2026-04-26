@@ -6,6 +6,7 @@ import { Heart, ShoppingBag, Eye } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Product } from '@/types'
 import { formatPrice, getDiscountPercent } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { useCart } from '@/contexts/CartContext'
 import Badge from '@/components/ui/Badge'
 
@@ -15,6 +16,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
+  const currency = useCurrency()
   const { addItem, getItemKey } = useCart()
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -193,11 +195,11 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${hasDiscount ? 'text-blush-600' : 'text-charcoal'}`}>
-            {formatPrice(displayPrice)}
+            {formatPrice(displayPrice, currency)}
           </span>
           {hasDiscount && (
             <span className="text-xs text-charcoal/40 line-through">
-              {formatPrice(product.price)}
+              {formatPrice(product.price, currency)}
             </span>
           )}
         </div>

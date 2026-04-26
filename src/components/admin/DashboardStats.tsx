@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ShoppingBag, DollarSign, Users, Package, TrendingUp, Clock, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { formatPrice, formatDateShort, ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/lib/utils'
+import { useCurrency } from '@/contexts/CurrencyContext'
 
 interface DashboardData {
   totalRevenue: number
@@ -37,6 +38,7 @@ const STATS_CONFIG = [
 ]
 
 export default function DashboardStats() {
+  const currency = useCurrency()
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ['admin-dashboard'],
     queryFn: async () => {
@@ -67,7 +69,7 @@ export default function DashboardStats() {
               ) : (
                 <>
                   <p className="text-2xl font-bold text-gray-800">
-                    {stat.format === 'currency' ? formatPrice(value) : value.toLocaleString()}
+                    {stat.format === 'currency' ? formatPrice(value, currency) : value.toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
                   {stat.key === 'totalRevenue' && data && (
@@ -129,7 +131,7 @@ export default function DashboardStats() {
                         {(order.items as unknown[])?.length || 0}
                       </td>
                       <td className="py-3 pr-4 font-medium text-gray-800 text-xs">
-                        {formatPrice(order.total)}
+                        {formatPrice(order.total, currency)}
                       </td>
                       <td className="py-3 pr-4">
                         <span className={`badge text-xs ${ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-600'}`}>
