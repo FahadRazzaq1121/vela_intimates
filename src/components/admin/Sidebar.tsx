@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, ShoppingBag, Package, Tag, Users,
-  BarChart2, Settings, LogOut, ChevronLeft, ChevronRight, Layers, MessageSquare, Star
+  BarChart2, Settings, LogOut, ChevronLeft, ChevronRight, Layers, MessageSquare, Star, Instagram
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -20,6 +20,7 @@ const NAV = [
   { href: '/admin/customers', icon: Users, label: 'Customers' },
   { href: '/admin/reviews', icon: Star, label: 'Reviews' },
   { href: '/admin/testimonials', icon: MessageSquare, label: 'Testimonials' },
+  { href: '/admin/instagram', icon: Instagram, label: 'Instagram' },
   { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ]
 

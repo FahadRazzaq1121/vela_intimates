@@ -21,6 +21,16 @@ export interface SiteSettings {
   [key: string]: string
 }
 
+export interface InstagramPost {
+  id: string
+  image_url: string
+  post_url: string | null
+  caption: string | null
+  is_active: boolean
+  sort_order: number
+  created_at: string
+}
+
 export interface Testimonial {
   id: string
   customer_name: string
@@ -225,4 +235,19 @@ export const getCachedTestimonials = unstable_cache(
   },
   ['testimonials'],
   { tags: ['testimonials'], revalidate: 300 }
+)
+
+export const getCachedInstagramPosts = unstable_cache(
+  async () => {
+    const db = getDb()
+    const { data } = await db
+      .from('instagram_posts')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order')
+      .limit(6)
+    return (data || []) as InstagramPost[]
+  },
+  ['instagram-posts'],
+  { tags: ['instagram-posts'], revalidate: 300 }
 )

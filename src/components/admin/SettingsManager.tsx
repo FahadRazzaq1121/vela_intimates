@@ -115,8 +115,12 @@ export default function SettingsManager({ initialSettings }: Props) {
       {activeTab === 'social' && (
         <div className="admin-card space-y-4">
           <h2 className="text-sm font-semibold text-gray-700">Social Media</h2>
+          <div>
+            <label className="label-luxury">Instagram Handle</label>
+            <input value={settings.instagram_handle || ''} onChange={(e) => set('instagram_handle', e.target.value)} className="input-luxury" placeholder="@velaintimate" />
+          </div>
           <div className="flex items-center justify-between mb-1">
-            <label className="label-luxury mb-0">Instagram</label>
+            <label className="label-luxury mb-0">Instagram Profile URL</label>
             <button type="button" onClick={() => toggle('show_instagram')} className={`w-10 h-6 rounded-full transition-colors relative ${settings.show_instagram === 'true' ? 'bg-blush-500' : 'bg-gray-200'}`}>
               <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.show_instagram === 'true' ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </button>
